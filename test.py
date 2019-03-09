@@ -3,6 +3,129 @@ import unittest
 
 from life import Grid, Generation, Cell, Coordinates
 
+
+class TestStillLifesGameOfLife(unittest.TestCase):
+
+    def test_block(self):
+        print("")
+        print("Block Test")
+        grid = Grid(
+            cells=[
+                [
+                    Cell(
+                        Coordinates(x,y),
+                        True
+                        if (x in [1, 2] and y in [1, 2])
+                        else False
+                    )
+                    for x in range(4)
+                ]
+                for y in range(4)
+            ]
+        )
+        print(grid)
+        generation = Generation(grid)
+        print(generation)
+        self.assertEqual(str(grid), str(generation.grid))
+
+    def test_beehive(self):
+        print("")
+        print("Beehive Test")
+        grid = Grid(
+            cells=[
+                [
+                    Cell(
+                        Coordinates(x,y),
+                        True
+                        if (x in [2, 3] and y in [1, 3])
+                            or (x in [1, 4] and y in [2])
+                        else False
+                    )
+                    for x in range(6)
+                ]
+                for y in range(5)
+            ]
+        )
+        print(grid)
+        generation = Generation(grid)
+        print(generation)
+        self.assertEqual(str(grid), str(generation.grid))
+
+    def test_loaf(self):
+        print("")
+        print("Beehive Test")
+        grid = Grid(
+            cells=[
+                [
+                    Cell(
+                        Coordinates(x,y),
+                        True
+                        if (x in [2, 3] and y in [1])
+                            or (x in [4] and y in [2, 3])
+                            or (
+                                (x == 1 and y == 2)
+                                or (x == 2 and y == 3)
+                                or (x == 3 and y == 4)
+                            )
+                        else False
+                    )
+                    for x in range(6)
+                ]
+                for y in range(6)
+            ]
+        )
+        print(grid)
+        generation = Generation(grid)
+        print(generation)
+        self.assertEqual(str(grid), str(generation.grid))
+
+    def test_boat(self):
+        print("")
+        print("Boat Test")
+        grid = Grid(
+            cells=[
+                [
+                    Cell(
+                        Coordinates(x,y),
+                        True
+                        if (x in [1, 2] and y in [1])
+                            or (x in [1, 3] and y in [2])
+                            or (x == 2 and y == 3)
+                        else False
+                    )
+                    for x in range(5)
+                ]
+                for y in range(5)
+            ]
+        )
+        print(grid)
+        generation = Generation(grid)
+        print(generation)
+        self.assertEqual(str(grid), str(generation.grid))
+
+    def test_tub(self):
+        print("")
+        print("Tub Test")
+        grid = Grid(
+            cells=[
+                [
+                    Cell(
+                        Coordinates(x,y),
+                        True
+                        if (x in [1, 3] and y in [2])
+                            or (y in [1, 3] and x in [2])
+                        else False
+                    )
+                    for x in range(5)
+                ]
+                for y in range(5)
+            ]
+        )
+        print(grid)
+        generation = Generation(grid)
+        print(generation)
+        self.assertEqual(str(grid), str(generation.grid))
+
 class TestOscillatorsGameOfLife(unittest.TestCase):
 
     def test_blinkers(self):
@@ -134,6 +257,7 @@ class TestOscillatorsGameOfLife(unittest.TestCase):
             generation = Generation(generation.grid, generation.generation_number)
         print(generation)
         self.assertEqual(str(grid), str(generation.grid))
+
 
 if __name__ == '__main__':
     unittest.main()
