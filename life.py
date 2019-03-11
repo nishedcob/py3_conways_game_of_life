@@ -6,6 +6,7 @@ from copy import deepcopy
 
 ALIVE_CHAR = "*"
 DEAD_CHAR = "."
+COMMENT_CHAR = "#"
 
 
 class Coordinates:
@@ -66,8 +67,8 @@ class Grid:
         )
 
 
-GENERATION_FORMAT = '''
-    generation = {num}
+GENERATION_FORMAT = \
+'''{comment} generation = {num}
 {table}
 '''
 
@@ -76,14 +77,20 @@ class Generation:
     generation_number = None
     grid = None
 
-    def __init__(self, grid: Grid=None, generation_number: int=0):
+    def __init__(self, grid: Grid=None, generation_number: int=0, steps: int=1, verbose: bool=False):
         if grid is not None:
-            self.generation_number = generation_number + 1
-            self.grid = self.step(grid=grid, steps=1)
+            if generation_number >= 0:
+                if steps > 0:
+                    self.generation_number = generation_number
+                else:
+                    self.generation_number = generation_number
+            else:
+                self.generation_number = generation_number
+            self.grid = self.step(grid=grid, steps=steps, verbose=verbose)
         else:
             raise ValueError("Grid must be provided")
 
-    def step(self, grid: Grid=None, steps: int=1) -> Grid:
+    def step(self, grid: Grid=None, steps: int=1, verbose: bool=False) -> Grid:
         def evaluate_cell(x: int, y: int, max_x: int, max_y: int, alive: bool) -> bool:
             min_x, min_y = 0, 0
             x_minus = x - 1 if (x - 1) > min_x else x
@@ -128,12 +135,15 @@ class Generation:
                     cell_eval_criteria['y'] = y
                     cell_eval_criteria['alive'] = grid.contents[y][x].alive
                     result_grid.contents[y][x].alive = evaluate_cell(**cell_eval_criteria)
+            if verbose:
+                print(GENERATION_FORMAT.format(num=self.generation_number, table=grid, comment=COMMENT_CHAR))
+            self.generation_number += 1
             return result_grid
         else:
-            return self.step(grid=self.step(grid=grid, steps=steps-1))
+            return self.step(grid=self.step(grid=grid, steps=steps-1, verbose=verbose), verbose=verbose)
 
     def __str__(self):
-        return GENERATION_FORMAT.format(num=self.generation_number, table=str(self.grid))
+        return GENERATION_FORMAT.format(num=self.generation_number if self.generation_number >= 0 else '?', table=str(self.grid), comment=COMMENT_CHAR)
 
 if __name__ == '__main__':
     # grid = Grid(width=10, height=10)
