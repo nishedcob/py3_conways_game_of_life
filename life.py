@@ -67,6 +67,43 @@ class Grid:
         )
 
 
+class GridWindow(Grid):
+    x_offset = None
+    y_offset = None
+    x_max = None
+    y_max = None
+
+    def __init__(self, grid: Grid, x_offset: int, y_offset: int, x_max: int, y_max: int):
+        y_offset = y_offset if y_offset >= 0 else 0
+        y_offset = y_offset if y_offset < grid.height else grid.height - 1
+        x_offset = x_offset if x_offset >= 0 else 0
+        x_offset = x_offset if x_offset < grid.width else grid.width - 1
+        y_max = y_max if y_max > y_offset else y_offset + 1
+        y_max = y_max if y_max <= grid.height else grid.height
+        x_max = x_max if x_max > x_offset else x_offset + 1
+        x_max = x_max if x_max <= grid.width else grid.width
+        self.x_offset = x_offset
+        self.y_offset = y_offset
+        self.x_max = x_max
+        self.y_max = y_max
+        self.contents = [grid.contents[y][x_offset:x_max] for y in range(y_offset, y_max)]
+        self.width = min(map(lambda row: len(row), self.contents))
+        self.height = len(self.contents)
+        self.contents = [
+            self.contents[row_idx][:self.width]
+            for row_idx in range(self.height)
+        ]
+
+    def __str__(self) -> str:
+        return super().__str__() + "\n" + \
+            "offset(x, y) = ({x}, {y})\n".format(
+                x=self.x_offset, y=self.y_offset
+            ) + \
+            "max(x, y) = ({x}, {y})".format(
+                x=self.x_max, y=self.y_max
+            )
+
+
 GENERATION_FORMAT = \
 '''{comment} generation = {num}
 {table}
@@ -79,13 +116,7 @@ class Generation:
 
     def __init__(self, grid: Grid=None, generation_number: int=0, steps: int=1, verbose: bool=False):
         if grid is not None:
-            if generation_number >= 0:
-                if steps > 0:
-                    self.generation_number = generation_number
-                else:
-                    self.generation_number = generation_number
-            else:
-                self.generation_number = generation_number
+            self.generation_number = generation_number
             self.grid = self.step(grid=grid, steps=steps, verbose=verbose)
         else:
             raise ValueError("Grid must be provided")
