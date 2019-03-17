@@ -4,7 +4,7 @@ from typing import List, Union
 from copy import deepcopy
 
 from game import read_state, write_state
-from life import Grid, Generation, Cell, Coordinates
+from life import Grid, Generation, Cell, Coordinates, GridWindow, COMMENT_CHAR
 
 
 class TestStillLifesGameOfLife(unittest.TestCase):
@@ -260,6 +260,166 @@ class TestOscillatorsGameOfLife(unittest.TestCase):
             generation = Generation(generation.grid, generation.generation_number)
         print(generation)
         self.assertEqual(str(grid), str(generation.grid))
+
+
+class TestSpaceships(unittest.TestCase):
+
+    initial_state_header = "{c} Initial:".format(c=COMMENT_CHAR)
+    final_state_header = "{c} Final:".format(c=COMMENT_CHAR)
+
+    def test_glider(self):
+        print("")
+        print("Glider Test")
+        grid = Grid(
+            cells=[
+                [
+                    Cell(
+                        Coordinates(x,y),
+                        True
+                        if (x == 1 and y == 2)
+                            or (x == 2 and y == 3)
+                            or (x == 3 and y in [1, 2, 3])
+                        else False
+                    )
+                    for x in range(6)
+                ]
+                for y in range(6)
+            ]
+        )
+        print(grid)
+        initial_glider = GridWindow(grid=grid, x_offset=0, y_offset=0, x_max=5, y_max=5)
+        initial_glider_str = str(Grid(cells=initial_glider.contents))
+        generation = Generation(grid)
+        for i in range(3):
+            print(generation)
+            generation = Generation(generation.grid, generation.generation_number)
+        print(generation)
+        final_glider = GridWindow(grid=generation.grid, x_offset=1, y_offset=1, x_max=6, y_max=6)
+        final_glider_str = str(Grid(cells=final_glider.contents))
+        print("")
+        print(self.initial_state_header)
+        print(initial_glider)
+        print("")
+        print(self.final_state_header)
+        print(final_glider)
+        self.assertEqual(initial_glider_str, final_glider_str)
+
+    def test_lightweight(self):
+        print("")
+        print("Lightweight Spaceship Test")
+        grid = Grid(
+            cells=[
+                [
+                    Cell(
+                        Coordinates(x,y),
+                        True
+                        if (x == 1 and y == 1)
+                            or (x == 4 and y == 1)
+                            or (x == 1 and y == 3)
+                            or (y == 4 and x in [2, 3, 4, 5])
+                            or (x == 5 and y in [2, 3])
+                        else False
+                    )
+                    for x in range(9)
+                ]
+                for y in range(6)
+            ]
+        )
+        print(grid)
+        initial_lwss = GridWindow(grid=grid, x_offset=0, y_offset=0, x_max=7, y_max=6)
+        initial_lwss_str = str(Grid(cells=initial_lwss.contents))
+        generation = Generation(grid)
+        for i in range(3):
+            print(generation)
+            generation = Generation(generation.grid, generation.generation_number)
+        print(generation)
+        final_lwss = GridWindow(grid=generation.grid, x_offset=2, y_offset=0, x_max=9, y_max=6)
+        final_lwss_str = str(Grid(cells=final_lwss.contents))
+        print("")
+        print(self.initial_state_header)
+        print(initial_lwss)
+        print("")
+        print(self.final_state_header)
+        print(final_lwss)
+        self.assertEqual(initial_lwss_str, final_lwss_str)
+
+    def test_midweight(self):
+        print("")
+        print("Midweight Spaceship Test")
+        grid = Grid(
+            cells=[
+                [
+                    Cell(
+                        Coordinates(x,y),
+                        True
+                        if (x == 3 and y == 1)
+                            or (x in [1, 5] and y == 2)
+                            or (x == 1 and y == 4)
+                            or (x == 6 and y in [3, 4, 5])
+                            or (y == 5 and x in [2, 3, 4, 5])
+                        else False
+                    )
+                    for x in range(10)
+                ]
+                for y in range(9)
+            ]
+        )
+        print(grid)
+        initial_mwss = GridWindow(grid=grid, x_offset=0, y_offset=0, x_max=8, y_max=7)
+        initial_mwss_str = str(Grid(cells=initial_mwss.contents))
+        generation = Generation(grid)
+        for i in range(3):
+            print(generation)
+            generation = Generation(generation.grid, generation.generation_number)
+        print(generation)
+        final_mwss = GridWindow(grid=generation.grid, x_offset=2, y_offset=0, x_max=10, y_max=7)
+        final_mwss_str = str(Grid(cells=final_mwss.contents))
+        print("")
+        print(self.initial_state_header)
+        print(initial_mwss)
+        print("")
+        print(self.final_state_header)
+        print(final_mwss)
+        self.assertEqual(initial_mwss_str, final_mwss_str)
+
+    def test_heavyweight(self):
+        print("")
+        print("Heavyweight Spaceship Test")
+        grid = Grid(
+            cells=[
+                [
+                    Cell(
+                        Coordinates(x,y),
+                        True
+                        if (x in [3, 4] and y == 1)
+                            or (x in [1, 6] and y == 2)
+                            or (x == 7 and y in [3, 4, 5])
+                            or (x == 1 and y == 4)
+                            or (y == 5 and x in [2, 3, 4, 5, 6])
+                        else False
+                    )
+                    for x in range(11)
+                ]
+                for y in range(9)
+            ]
+        )
+        print(grid)
+        initial_hwss = GridWindow(grid=grid, x_offset=0, y_offset=0, x_max=9, y_max=7)
+        initial_hwss_str = str(Grid(cells=initial_hwss.contents))
+        generation = Generation(grid)
+        for i in range(3):
+            print(generation)
+            generation = Generation(generation.grid, generation.generation_number)
+        print(generation)
+        final_hwss = GridWindow(grid=generation.grid, x_offset=2, y_offset=0, x_max=11, y_max=7)
+        final_hwss_str = str(Grid(cells=final_hwss.contents))
+        print("")
+        print(self.initial_state_header)
+        print(initial_hwss)
+        print("")
+        print(self.final_state_header)
+        print(final_hwss)
+        self.assertEqual(initial_hwss_str, final_hwss_str)
 
 
 class GameIOTestUtils:
